@@ -31,5 +31,38 @@ namespace company_backend.Infrastructure.Repositories
             await Task.Yield();
             return _companies.Values;
         }
+
+        public async Task<IEnumerable<Company>> SearchAsync(string? query)
+        {
+            await Task.Yield();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return _companies.Values;
+
+            var q = query.Trim().ToLowerInvariant();
+
+            var results = _companies.Values.Where(c =>
+            {
+                if (!string.IsNullOrWhiteSpace(c.CompanyName) && c.CompanyName.ToLowerInvariant().Contains(q))
+                    return true;
+
+                if (!string.IsNullOrWhiteSpace(c.WebSiteUrl) && Uri.TryCreate(c.WebSiteUrl, UriKind.Absolute, out var uri))
+                {
+                    var host = uri.Host.ToLowerInvariant();
+                    if (host.Contains(q)) return true;
+                    // also allow checking domain without subdomain
+                    var hostParts = host.Split('.');
+                    if (hostParts.Length >= 2)
+                    {
+                        var domain = string.Join('.', hostParts.Skip(hostParts.Length - 2));
+                        if (domain.Contains(q)) return true;
+                    }
+                }
+
+                return false;
+            });
+
+            return results;
+        }
     }
 }

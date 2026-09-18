@@ -18,11 +18,18 @@ namespace company_backend.Controllers
         }
 
         // GET: api/<CompanyController>
+        // Optional query parameter 'q' filters by partial/full company name or website domain
         [HttpGet]
-        public async System.Threading.Tasks.Task<IActionResult> Get()
+        public async System.Threading.Tasks.Task<IActionResult> Get([FromQuery] string? q)
         {
-            var companies = await _repo.GetAllAsync();
-            return Ok(companies);
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                var companies = await _repo.GetAllAsync();
+                return Ok(companies);
+            }
+
+            var filtered = await _repo.SearchAsync(q);
+            return Ok(filtered);
         }
 
         // GET api/<CompanyController>/5
@@ -55,7 +62,6 @@ namespace company_backend.Controllers
             var existing = await _repo.GetAsync(id);
             if (existing is null) return NotFound();
 
-            // For in-memory store, SaveAsync will overwrite if id mapping is not used; keep behavior minimal
             await _repo.SaveAsync(company);
             return NoContent();
         }
