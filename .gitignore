@@ -57,3 +57,4 @@ TestResult.xml
 nunit-*.xml
 /.vs/company.slnx/v18
 /.vs/company.slnx/FileContentIndex
+/.vs
