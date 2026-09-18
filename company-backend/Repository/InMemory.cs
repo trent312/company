@@ -1,24 +1,35 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
-using company_backend.DTO;
+using System.Threading.Tasks;
+using company_backend.Domain.Entities;
+using company_backend.Application.Interfaces;
 
-namespace company_backend.Repository
+namespace company_backend.Infrastructure.Repositories
 {
-    public class InMemory
+    public class InMemory : ICompanyRepository
     {
-        // Simple thread-safe in-memory store for companies
         private static readonly ConcurrentDictionary<int, Company> _companies = new();
         private static int _idCounter;
 
-        // Saves the provided company to the in-memory store and returns the generated id.
-        public int Save(Company company)
+        public async Task<int> SaveAsync(Company company)
         {
+            await Task.Yield();
+
             var id = Interlocked.Increment(ref _idCounter);
             _companies[id] = company;
             return id;
         }
 
-        // Optional: expose read access for other parts of the app
-        public Company? Get(int id) => _companies.TryGetValue(id, out var c) ? c : null;
+        public async Task<Company?> GetAsync(int id)
+        {
+            await Task.Yield();
+            return _companies.TryGetValue(id, out var c) ? c : null;
+        }
+
+        public async Task<IEnumerable<Company>> GetAllAsync()
+        {
+            await Task.Yield();
+            return _companies.Values;
+        }
     }
 }
