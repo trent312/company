@@ -1,0 +1,9 @@
+<div class="company-list">
+  <h2>Companies</h2>
+  <ul>
+    <li *ngFor="let c of companies">
+      <strong>{{ c.companyName }}</strong> — <a [href]="c.webSiteUrl" target="_blank">{{ c.webSiteUrl }}</a>
+    </li>
+  </ul>
+  <div *ngIf="companies.length === 0">No companies found.</div>
+</div>

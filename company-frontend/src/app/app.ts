@@ -2,9 +2,18 @@ import { Component, signal } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.html',
+  template: `
+    <div class="app-container">
+      <header>
+        <h1>Companies</h1>
+      </header>
+      <main>
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  `,
   standalone: false,
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
   protected readonly title = signal('company-frontend');
